@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
@@ -13,7 +13,6 @@ import {
   Award, 
   Menu, 
   X,
-  ChevronLeft,
   ChevronRight,
   Zap
 } from 'lucide-react';
@@ -23,52 +22,42 @@ const courses = [
     id: 'ds',
     title: 'Data Science',
     price: '₹15,000',
-    duration: '6 Months',
-    level: 'Beginner to Advanced',
-    description: 'Master data analysis, visualization, and statistical modeling with Python. This comprehensive program covers everything from basic statistics to advanced machine learning techniques used by top data scientists.',
+    description: 'Master data analysis, visualization, and statistical modeling with Python.',
     icon: <Database className="w-8 h-8 text-blue-500" />,
-    features: ['Python for Data Science', 'Machine Learning Basics', 'Data Visualization', 'Real-world Projects', 'SQL for Data Analysis', 'Statistical Modeling'],
+    features: ['Python for Data Science', 'Machine Learning Basics', 'Data Visualization', 'Real-world Projects'],
     isFreeStarter: true
   },
   {
     id: 'ai-ml',
     title: 'AI & Machine Learning',
     price: '₹18,000',
-    duration: '8 Months',
-    level: 'Intermediate',
-    description: 'Deep dive into neural networks, computer vision, and NLP. Learn to build and deploy state-of-the-art AI models using industry-standard frameworks like TensorFlow and PyTorch.',
+    description: 'Deep dive into neural networks, computer vision, and NLP.',
     icon: <Zap className="w-8 h-8 text-purple-500" />,
-    features: ['Deep Learning', 'TensorFlow & PyTorch', 'Computer Vision', 'Generative AI', 'Natural Language Processing', 'Reinforcement Learning'],
+    features: ['Deep Learning', 'TensorFlow & PyTorch', 'Computer Vision', 'Generative AI'],
   },
   {
     id: 'cyber',
     title: 'Cybersecurity',
     price: '₹20,000',
-    duration: '5 Months',
-    level: 'Beginner',
-    description: 'Learn to protect systems, networks, and data from digital attacks. This course prepares you for industry certifications like CompTIA Security+ and CEH.',
+    description: 'Learn to protect systems, networks, and data from digital attacks.',
     icon: <ShieldCheck className="w-8 h-8 text-red-500" />,
-    features: ['Ethical Hacking', 'Network Security', 'Cryptography', 'Incident Response', 'Cloud Security', 'Penetration Testing'],
+    features: ['Ethical Hacking', 'Network Security', 'Cryptography', 'Incident Response'],
   },
   {
     id: 'fsa',
     title: 'Full Stack Development',
     price: '₹22,000',
-    duration: '7 Months',
-    level: 'Beginner',
-    description: 'Build complete web applications from front-end to back-end. Master the MERN stack and learn modern DevOps practices to deploy your applications at scale.',
+    description: 'Build complete web applications from front-end to back-end.',
     icon: <Code className="w-8 h-8 text-green-500" />,
-    features: ['React & Next.js', 'Node.js & Express', 'MongoDB & SQL', 'DevOps Basics', 'System Design', 'Cloud Deployment'],
+    features: ['React & Next.js', 'Node.js & Express', 'MongoDB & SQL', 'DevOps Basics'],
   },
   {
     id: 'excel',
     title: 'Excel & Advanced Excel',
     price: '₹5,000',
-    duration: '2 Months',
-    level: 'Beginner',
-    description: 'Master data manipulation, complex formulas, and automation. Transform from a basic user to an Excel power user capable of building complex dashboards and automated workflows.',
+    description: 'Master data manipulation, complex formulas, and automation.',
     icon: <BarChart3 className="w-8 h-8 text-emerald-500" />,
-    features: ['Pivot Tables', 'VLOOKUP/XLOOKUP', 'VBA & Macros', 'Power Query', 'Data Modeling', 'Dashboard Design'],
+    features: ['Pivot Tables', 'VLOOKUP/XLOOKUP', 'VBA & Macros', 'Power Query'],
   }
 ];
 
@@ -84,69 +73,6 @@ const testimonials = [
     role: 'Full Stack Developer',
     content: 'Comprehensive curriculum and great support. I landed my dream job in 6 months.',
     avatar: 'https://picsum.photos/seed/priya/100/100'
-  }
-];
-
-const aiToolsList = [
-  {
-    name: 'ChatGPT',
-    use: 'Text Generation & Coding',
-    where: 'Content creation, debugging, brainstorming, and automated customer support.',
-    icon: '🤖'
-  },
-  {
-    name: 'Midjourney',
-    use: 'Image Generation',
-    where: 'Graphic design, concept art, marketing visuals, and architectural visualization.',
-    icon: '🎨'
-  },
-  {
-    name: 'GitHub Copilot',
-    use: 'Coding Assistant',
-    where: 'Software development, auto-completing functions, and writing unit tests.',
-    icon: '💻'
-  },
-  {
-    name: 'Claude',
-    use: 'Reasoning & Analysis',
-    where: 'Legal document review, long-form writing, and complex data interpretation.',
-    icon: '🧠'
-  },
-  {
-    name: 'Perplexity',
-    use: 'AI Search & Research',
-    where: 'Academic research, fact-checking, and real-time information retrieval.',
-    icon: '🔍'
-  },
-  {
-    name: 'ElevenLabs',
-    use: 'Voice Synthesis',
-    where: 'Audiobooks, video voiceovers, and accessibility tools for the visually impaired.',
-    icon: '🎙️'
-  },
-  {
-    name: 'Runway Gen-2',
-    use: 'Generative Video',
-    where: 'Film production, social media content, and experimental motion graphics.',
-    icon: '🎬'
-  },
-  {
-    name: 'Jasper',
-    use: 'Marketing Copy',
-    where: 'Ad copy, blog posts, email campaigns, and SEO optimization.',
-    icon: '✍️'
-  },
-  {
-    name: 'DALL-E 3',
-    use: 'Precise Image Creation',
-    where: 'Product mockups, illustrative icons, and creative storytelling.',
-    icon: '🖼️'
-  },
-  {
-    name: 'Grammarly AI',
-    use: 'Writing Enhancement',
-    where: 'Professional emails, academic papers, and business reports.',
-    icon: '📝'
   }
 ];
 
@@ -227,28 +153,6 @@ const roadmapData = [
       { name: 'Coursera: MLOps Specialization', url: 'https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops' },
       { name: 'Made With ML', url: 'https://madewithml.com/' }
     ]
-  },
-  {
-    id: 'aitools',
-    title: 'AI Tools & Ecosystem',
-    description: 'Master the industry-standard AI tools used by professionals worldwide.',
-    icon: <Zap className="w-8 h-8" />,
-    topics: [
-      'ChatGPT: Advanced Prompt Engineering & Content Creation',
-      'Midjourney: Professional AI Image Generation & Design',
-      'GitHub Copilot: AI-Powered Coding & Development',
-      'Claude: Complex Reasoning & Long-form Analysis',
-      'Perplexity: AI-Driven Research & Information Retrieval',
-      'ElevenLabs: High-Fidelity Voice Synthesis & Audio',
-      'Runway: Generative Video Editing & Motion Graphics',
-      'Jasper: Enterprise Marketing & Copywriting',
-      'DALL-E 3: Precise Image Creation & Editing',
-      'Grammarly: AI Writing Enhancement & Clarity'
-    ],
-    links: [
-      { name: 'OpenAI: ChatGPT Guide', url: 'https://openai.com/blog/chatgpt' },
-      { name: 'Midjourney: Documentation', url: 'https://docs.midjourney.com/' }
-    ]
   }
 ];
 
@@ -257,54 +161,7 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRoadmap, setSelectedRoadmap] = useState<typeof roadmapData[0] | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<typeof courses[0] | null>(null);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    course: '',
-    phone: '',
-    email: ''
-  });
   const [completedTopics, setCompletedTopics] = useState<Record<string, string[]>>({});
-
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -70% 0px',
-      threshold: 0
-    };
-
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    const sections = ['hero', 'courses', 'roadmap', 'features', 'testimonials'];
-    sections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleContactSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    // In a real app, you'd send this to a backend
-    console.log('Form submitted:', contactForm);
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setIsContactModalOpen(false);
-      setContactForm({ name: '', course: '', phone: '', email: '' });
-    }, 2000);
-  };
 
   const toggleTopic = (sectionId: string, topic: string) => {
     setCompletedTopics(prev => {
@@ -336,55 +193,16 @@ export default function App() {
             
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-8">
-              <a 
-                href="#courses" 
-                className={`text-sm font-medium transition-all relative py-1 ${
-                  activeSection === 'courses' 
-                    ? 'text-blue-600' 
-                    : darkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-600 hover:text-blue-600'
-                }`}
-              >
-                Courses
-                {activeSection === 'courses' && (
-                  <motion.div layoutId="activeNav" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-                )}
-              </a>
-              <a 
-                href="#roadmap" 
-                className={`text-sm font-medium transition-all relative py-1 ${
-                  activeSection === 'roadmap' 
-                    ? 'text-blue-600' 
-                    : darkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-600 hover:text-blue-600'
-                }`}
-              >
-                Roadmap
-                {activeSection === 'roadmap' && (
-                  <motion.div layoutId="activeNav" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-                )}
-              </a>
-              <a 
-                href="#features" 
-                className={`text-sm font-medium transition-all relative py-1 ${
-                  activeSection === 'features' 
-                    ? 'text-blue-600' 
-                    : darkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-600 hover:text-blue-600'
-                }`}
-              >
-                Features
-                {activeSection === 'features' && (
-                  <motion.div layoutId="activeNav" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-                )}
-              </a>
+              <a href="#courses" className={`text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-600 hover:text-blue-600'}`}>Courses</a>
+              <a href="#roadmap" className={`text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-600 hover:text-blue-600'}`}>Roadmap</a>
+              <a href="#features" className={`text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-600 hover:text-blue-600'}`}>Features</a>
               <button 
                 onClick={() => setDarkMode(!darkMode)}
                 className={`p-2 rounded-full transition-colors ${darkMode ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
               >
                 {darkMode ? <Zap className="w-5 h-5 fill-current" /> : <Zap className="w-5 h-5" />}
               </button>
-              <button 
-                onClick={() => setIsContactModalOpen(true)}
-                className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-              >
+              <button className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
                 Enroll Now
               </button>
             </div>
@@ -413,60 +231,19 @@ export default function App() {
               exit={{ opacity: 0, height: 0 }}
               className={`md:hidden border-b overflow-hidden ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}
             >
-              <motion.div 
-                initial="closed"
-                animate="open"
-                variants={{
-                  open: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-                  closed: { transition: { staggerChildren: 0.05, staggerDirection: -1 } }
-                }}
-                className="px-4 py-8 space-y-4"
-              >
-                {[
-                  { id: 'courses', label: 'Courses' },
-                  { id: 'roadmap', label: 'Roadmap' },
-                  { id: 'features', label: 'Features' }
-                ].map((item) => (
-                  <motion.a
-                    key={item.id}
-                    href={`#${item.id}`}
-                    variants={{
-                      open: { opacity: 1, x: 0 },
-                      closed: { opacity: 0, x: -20 }
-                    }}
-                    className={`flex items-center justify-between p-4 rounded-2xl text-lg font-bold transition-all ${
-                      activeSection === item.id 
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                        : darkMode ? 'text-slate-300 hover:bg-slate-900' : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                    {activeSection === item.id && <motion.div layoutId="mobileActive" className="w-2 h-2 bg-white rounded-full" />}
-                  </motion.a>
-                ))}
-                
-                <motion.button 
-                  variants={{
-                    open: { opacity: 1, y: 0 },
-                    closed: { opacity: 0, y: 10 }
-                  }}
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsContactModalOpen(true);
-                  }}
-                  className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-blue-500/20"
-                >
-                  Enroll Now
-                </motion.button>
-              </motion.div>
+              <div className="px-4 py-6 space-y-4">
+                <a href="#courses" className={`block text-lg font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`} onClick={() => setIsMenuOpen(false)}>Courses</a>
+                <a href="#roadmap" className={`block text-lg font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`} onClick={() => setIsMenuOpen(false)}>Roadmap</a>
+                <a href="#features" className={`block text-lg font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`} onClick={() => setIsMenuOpen(false)}>Features</a>
+                <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold">Enroll Now</button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="relative pt-20 pb-32 overflow-hidden">
+      <section className="relative pt-20 pb-32 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10">
           <div className={`absolute top-0 left-0 w-72 h-72 rounded-full blur-3xl ${darkMode ? 'bg-blue-900/20' : 'bg-blue-400/10'}`} />
           <div className={`absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl ${darkMode ? 'bg-purple-900/20' : 'bg-purple-400/10'}`} />
@@ -492,10 +269,7 @@ export default function App() {
               <button className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 group">
                 Explore Courses <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button 
-                onClick={() => setIsContactModalOpen(true)}
-                className={`w-full sm:w-auto bg-transparent border-2 px-8 py-4 rounded-2xl font-bold text-lg transition-all ${darkMode ? 'text-white border-slate-700 hover:bg-slate-800' : 'text-slate-900 border-slate-200 hover:bg-slate-50'}`}
-              >
+              <button className={`w-full sm:w-auto bg-transparent border-2 px-8 py-4 rounded-2xl font-bold text-lg transition-all ${darkMode ? 'text-white border-slate-700 hover:bg-slate-800' : 'text-slate-900 border-slate-200 hover:bg-slate-50'}`}>
                 Free Trial
               </button>
             </div>
@@ -567,12 +341,8 @@ export default function App() {
                     <span className="text-sm text-slate-400 block">Starting at</span>
                     <span className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{course.price}</span>
                   </div>
-                  <button 
-                    onClick={() => setSelectedCourse(course)}
-                    className="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all flex items-center gap-2 group/btn shadow-lg shadow-blue-500/20"
-                  >
-                    View Details 
-                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                  <button className="bg-slate-900 text-white p-3 rounded-xl hover:bg-blue-600 transition-all group-hover:scale-110 dark:bg-blue-600 dark:hover:bg-blue-700">
+                    <ChevronRight className="w-6 h-6" />
                   </button>
                 </div>
               </motion.div>
@@ -662,52 +432,6 @@ export default function App() {
                 </motion.div>
               );
             })}
-          </div>
-
-          {/* AI Tools Ecosystem Section */}
-          <div className="mt-32">
-            <div className="text-center mb-16">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold mb-6"
-              >
-                <Zap className="w-4 h-4" /> AI Tools Ecosystem
-              </motion.div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6 tracking-tight">
-                Master the <span className="text-blue-400">AI Toolset</span>
-              </h2>
-              <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-                Discover the most powerful AI tools used by industry professionals to boost productivity and innovation.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {aiToolsList.map((tool, i) => (
-                <motion.div
-                  key={tool.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group bg-slate-900/40 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 hover:border-blue-500/50 hover:bg-slate-800/60 transition-all duration-300"
-                >
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="text-4xl">{tool.icon}</div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">{tool.name}</h3>
-                      <span className="text-blue-500 text-xs font-bold uppercase tracking-widest">{tool.use}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-2xl bg-slate-950/50 border border-slate-800 group-hover:border-blue-500/30 transition-colors">
-                      <p className="text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Primary Use Case</p>
-                      <p className="text-slate-300 text-sm leading-relaxed">{tool.where}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -808,167 +532,6 @@ export default function App() {
             </div>
           )}
         </AnimatePresence>
-
-        {/* Course Detail Modal */}
-        <AnimatePresence>
-          {selectedCourse && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSelectedCourse(null)}
-                className="absolute inset-0 bg-black/60 backdrop-blur-md"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className={`relative w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden border ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-5 h-full max-h-[90vh] overflow-y-auto">
-                  {/* Left Sidebar - Info */}
-                  <div className={`lg:col-span-2 p-8 lg:p-12 border-b lg:border-b-0 lg:border-r ${darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
-                    <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-8 ${darkMode ? 'bg-slate-800' : 'bg-white shadow-xl shadow-slate-200'}`}>
-                      {selectedCourse.icon}
-                    </div>
-                    <h3 className={`text-3xl font-bold mb-4 leading-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedCourse.title}</h3>
-                    <p className={`text-lg mb-8 leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>{selectedCourse.description}</p>
-                    
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                          <Zap className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Duration</p>
-                          <p className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedCourse.duration}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
-                          <BarChart3 className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Level</p>
-                          <p className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedCourse.level}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                          <Award className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Certificate</p>
-                          <p className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>Industry Recognized</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-12 pt-8 border-t border-slate-200/10">
-                      <div className="flex items-baseline gap-2 mb-6">
-                        <span className={`text-4xl font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedCourse.price}</span>
-                        <span className="text-slate-500 text-sm">Full Course Access</span>
-                      </div>
-                      <button 
-                        onClick={() => setIsContactModalOpen(true)}
-                        className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200"
-                      >
-                        Enroll Now
-                      </button>
-
-                      {/* Course Navigation */}
-                      <div className="mt-6 flex items-center gap-3">
-                        <button
-                          disabled={courses.findIndex(c => c.id === selectedCourse.id) === 0}
-                          onClick={() => {
-                            const idx = courses.findIndex(c => c.id === selectedCourse.id);
-                            if (idx > 0) setSelectedCourse(courses[idx - 1]);
-                          }}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border font-bold transition-all ${
-                            courses.findIndex(c => c.id === selectedCourse.id) === 0
-                              ? 'opacity-30 cursor-not-allowed border-slate-700 text-slate-500'
-                              : darkMode 
-                                ? 'border-slate-700 text-white hover:bg-slate-800' 
-                                : 'border-slate-200 text-slate-700 hover:bg-slate-50'
-                          }`}
-                        >
-                          <ChevronLeft className="w-4 h-4" /> Previous
-                        </button>
-                        <button
-                          disabled={courses.findIndex(c => c.id === selectedCourse.id) === courses.length - 1}
-                          onClick={() => {
-                            const idx = courses.findIndex(c => c.id === selectedCourse.id);
-                            if (idx < courses.length - 1) setSelectedCourse(courses[idx + 1]);
-                          }}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border font-bold transition-all ${
-                            courses.findIndex(c => c.id === selectedCourse.id) === courses.length - 1
-                              ? 'opacity-30 cursor-not-allowed border-slate-700 text-slate-500'
-                              : darkMode 
-                                ? 'border-slate-700 text-white hover:bg-slate-800' 
-                                : 'border-slate-200 text-slate-700 hover:bg-slate-50'
-                          }`}
-                        >
-                          Next <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Content - Curriculum */}
-                  <div className="lg:col-span-3 p-8 lg:p-12">
-                    <div className="flex justify-between items-center mb-10">
-                      <h4 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Course Curriculum</h4>
-                      <button 
-                        onClick={() => setSelectedCourse(null)}
-                        className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}
-                      >
-                        <X className="w-6 h-6" />
-                      </button>
-                    </div>
-
-                    <div className="space-y-4">
-                      {selectedCourse.features.map((feature, idx) => (
-                        <motion.div 
-                          key={idx}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.05 }}
-                          className={`flex items-center gap-4 p-5 rounded-2xl border transition-all ${darkMode ? 'bg-slate-900/50 border-slate-800 hover:border-blue-500/50' : 'bg-white border-slate-100 hover:border-blue-200 shadow-sm'}`}
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-sm">
-                            {idx + 1}
-                          </div>
-                          <span className={`font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{feature}</span>
-                          <CheckCircle2 className="w-5 h-5 text-emerald-500 ml-auto" />
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    <div className="mt-10 grid grid-cols-2 gap-4">
-                      <div className={`p-6 rounded-3xl border border-dashed ${darkMode ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50'}`}>
-                        <h5 className={`font-bold mb-2 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                          <Users className="w-5 h-5 text-blue-500" /> Support
-                        </h5>
-                        <p className="text-slate-500 text-xs leading-relaxed">
-                          24/7 community access and weekly live doubt sessions.
-                        </p>
-                      </div>
-                      <div className={`p-6 rounded-3xl border border-dashed ${darkMode ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50'}`}>
-                        <h5 className={`font-bold mb-2 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                          <Star className="w-5 h-5 text-yellow-500" /> Projects
-                        </h5>
-                        <p className="text-slate-500 text-xs leading-relaxed">
-                          Build 5+ industry-grade projects for your portfolio.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
       </section>
 
       {/* Why Choose Us */}
@@ -1058,16 +621,10 @@ export default function App() {
                 Join thousands of students and start learning today. Get unlimited access to all courses with our premium plan.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button 
-                  onClick={() => setIsContactModalOpen(true)}
-                  className="w-full sm:w-auto bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all"
-                >
+                <button className="w-full sm:w-auto bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all">
                   Get Started Now
                 </button>
-                <button 
-                  onClick={() => setIsContactModalOpen(true)}
-                  className="w-full sm:w-auto bg-transparent text-white border-2 border-slate-700 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all"
-                >
+                <button className="w-full sm:w-auto bg-transparent text-white border-2 border-slate-700 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all">
                   Contact Admissions
                 </button>
               </div>
@@ -1129,111 +686,6 @@ export default function App() {
             </div>
           </div>
         </div>
-        {/* Contact Modal */}
-        <AnimatePresence>
-          {isContactModalOpen && (
-            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsContactModalOpen(false)}
-                className="absolute inset-0 bg-black/60 backdrop-blur-md"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}
-              >
-                <div className="p-8 md:p-10">
-                  <div className="flex justify-between items-center mb-8">
-                    <div>
-                      <h3 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Contact Us</h3>
-                      <p className="text-slate-500 text-sm">Fill out the form and we'll get back to you.</p>
-                    </div>
-                    <button 
-                      onClick={() => setIsContactModalOpen(false)}
-                      className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
-                  </div>
-
-                  {isSubmitted ? (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="py-12 text-center"
-                    >
-                      <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle2 className="w-10 h-10" />
-                      </div>
-                      <h4 className={`text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Thank You!</h4>
-                      <p className="text-slate-500">Your message has been received. We'll contact you shortly.</p>
-                    </motion.div>
-                  ) : (
-                    <form onSubmit={handleContactSubmit} className="space-y-5">
-                      <div>
-                        <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Full Name</label>
-                        <input 
-                          required
-                          type="text" 
-                          placeholder="John Doe"
-                          value={contactForm.name}
-                          onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                          className={`w-full px-5 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
-                        />
-                      </div>
-                      <div>
-                        <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Email Address</label>
-                        <input 
-                          required
-                          type="email" 
-                          placeholder="john@example.com"
-                          value={contactForm.email}
-                          onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                          className={`w-full px-5 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
-                        />
-                      </div>
-                      <div>
-                        <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Phone Number</label>
-                        <input 
-                          required
-                          type="tel" 
-                          placeholder="+91 98765 43210"
-                          value={contactForm.phone}
-                          onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
-                          className={`w-full px-5 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
-                        />
-                      </div>
-                      <div>
-                        <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Select Course</label>
-                        <select 
-                          required
-                          value={contactForm.course}
-                          onChange={(e) => setContactForm({...contactForm, course: e.target.value})}
-                          className={`w-full px-5 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
-                        >
-                          <option value="">Choose a course</option>
-                          {courses.map(c => (
-                            <option key={c.id} value={c.title}>{c.title}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <button 
-                        type="submit"
-                        className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 mt-4"
-                      >
-                        Send Message
-                      </button>
-                    </form>
-                  )}
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
       </footer>
     </div>
   );
