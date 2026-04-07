@@ -41,74 +41,74 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center p-4 transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
+        className="w-full max-w-md bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/50 rounded-[2.5rem] p-10 shadow-xl dark:shadow-2xl transition-all"
       >
         <div className="text-center mb-10">
-          <div className="inline-flex bg-blue-600 p-3 rounded-2xl mb-6">
+          <div className="inline-flex bg-emerald-600 p-4 rounded-2xl mb-6 shadow-lg shadow-emerald-600/20">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-          <p className="text-slate-400">Join AKSHARAM Academy today</p>
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">Create Account</h2>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">Join AKSHARAM Academy today</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400 text-sm">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <div className="mb-8 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-600 dark:text-red-400 font-bold text-sm">
+            <AlertCircle className="w-6 h-6 flex-shrink-0" />
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-400 uppercase tracking-wider pl-1">Full Name</label>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Full Name</label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <User className="w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                <User className="w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-500 transition-colors" />
               </div>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/50 text-slate-900 dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 shadow-inner"
                 placeholder="John Doe"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-400 uppercase tracking-wider pl-1">Email Address</label>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Email Address</label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail className="w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                <Mail className="w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-500 transition-colors" />
               </div>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/50 text-slate-900 dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 shadow-inner"
                 placeholder="name@example.com"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-400 uppercase tracking-wider pl-1">Password</label>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Password</label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                <Lock className="w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-500 transition-colors" />
               </div>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/50 text-slate-900 dark:text-white pl-14 pr-6 py-5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 shadow-inner"
                 placeholder="••••••••"
               />
             </div>
@@ -117,17 +117,17 @@ export const Register: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-lg hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-600/20 flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating account..." : "Sign Up Now"}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
 
-        <div className="mt-8 text-center">
-          <p className="text-slate-500 text-sm">
+        <div className="mt-10 text-center">
+          <p className="text-slate-500 text-sm font-bold">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 font-bold hover:text-blue-400 transition-colors">
+            <Link to="/login" className="text-emerald-600 dark:text-emerald-500 font-black hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors ml-1">
               Login
             </Link>
           </p>

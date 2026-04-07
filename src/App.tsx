@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { Navbar } from "./components/Navbar";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { Home } from "./pages/Home";
@@ -12,11 +13,12 @@ import { CourseDetail } from "./pages/CourseDetail";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-slate-950 text-slate-100">
-          <Navbar />
-          <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+            <Navbar />
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/courses" element={<CourseList />} />
@@ -49,7 +51,8 @@ function App() {
           </Routes>
         </div>
       </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
