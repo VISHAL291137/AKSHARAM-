@@ -182,332 +182,164 @@ async function startServer() {
 
   // Middleware to verify JWT
   const authenticateToken = (req: any, res: any, next: any) => {
-    try {
-      const authHeader = req.headers["authorization"];
-      const token = authHeader && authHeader.split(" ")[1];
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
-      if (!token) return res.status(401).json({ error: "Access denied. No token provided." });
+    if (!token) return res.status(401).json({ error: "Access denied" });
 
-      jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-        if (err) {
-          console.error("Token verification error:", err.message);
-          return res.status(403).json({ error: "Invalid or expired token" });
-        }
-        req.user = user;
-        next();
-      });
-    } catch (error) {
-      console.error("Authentication middleware error:", error);
-      res.status(500).json({ error: "An error occurred during authentication" });
-    }
+    jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+      if (err) return res.status(403).json({ error: "Invalid token" });
+      req.user = user;
+      next();
+    });
   };
 
   // Middleware to check role
   const authorizeRole = (role: string) => {
     return (req: any, res: any, next: any) => {
-      try {
-        if (!req.user) {
-          return res.status(401).json({ error: "Authentication required" });
-        }
-        if (req.user.role !== role) {
-          return res.status(403).json({ error: "Forbidden: Insufficient permissions" });
-        }
-        next();
-      } catch (error) {
-        console.error("Authorization middleware error:", error);
-        res.status(500).json({ error: "An error occurred during authorization" });
+      if (req.user.role !== role) {
+        return res.status(403).json({ error: "Forbidden: Insufficient permissions" });
       }
+      next();
     };
   };
 
   // Auth Routes
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const { email, password, name } = req.body;
-
-      if (!email || !password || !name) {
-        return res.status(400).json({ error: "Email, password, and name are required" });
-      }
-
-      if (password.length < 6) {
-        return res.status(400).json({ error: "Password must be at least 6 characters" });
-      }
-
-      if (users.find((u) => u.email === email)) {
-        return res.status(400).json({ error: "User already exists" });
-      }
-
-      const newUser = {
-        id: Date.now().toString(),
-        email,
-        password: bcrypt.hashSync(password, 10),
-        role: "user",
-        name,
-        status: "active",
-      };
-      users.push(newUser);
-      const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name }, JWT_SECRET);
-      res.json({ token, user: { id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name } });
-    } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ error: "An error occurred during registration" });
+  app.post("/api/auth/register", (req, res) => {
+    const { email, password, name } = req.body;
+    if (users.find((u) => u.email === email)) {
+      return res.status(400).json({ error: "User already exists" });
     }
+    const newUser = {
+      id: Date.now().toString(),
+      email,
+      password: bcrypt.hashSync(password, 10),
+      role: "user",
+      name,
+      status: "active",
+    };
+    users.push(newUser);
+    const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name }, JWT_SECRET);
+    res.json({ token, user: { id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name } });
   });
 
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
-
-      if (!email || !password) {
-        return res.status(400).json({ error: "Email and password are required" });
-      }
-
-      const user = users.find((u) => u.email === email);
-      if (!user || !bcrypt.compareSync(password, user.password)) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      if (user.status === "inactive") {
-        return res.status(403).json({ error: "Account is inactive. Contact support." });
-      }
-
-      const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET);
-      res.json({ token, user: { id: user.id, email: user.email, role: user.role, name: user.name } });
-    } catch (error) {
-      console.error("Login error:", error);
-      res.status(500).json({ error: "An error occurred during login" });
+  app.post("/api/auth/login", (req, res) => {
+    const { email, password } = req.body;
+    const user = users.find((u) => u.email === email);
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ error: "Invalid credentials" });
     }
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET);
+    res.json({ token, user: { id: user.id, email: user.email, role: user.role, name: user.name } });
   });
 
   app.get("/api/auth/me", authenticateToken, (req: any, res) => {
-    try {
-      res.json({ user: req.user });
-    } catch (error) {
-      console.error("Auth verification error:", error);
-      res.status(500).json({ error: "An error occurred while verifying authentication" });
-    }
+    res.json({ user: req.user });
   });
 
   // Course Routes
   app.get("/api/courses", (req, res) => {
-    try {
-      res.json(courses);
-    } catch (error) {
-      console.error("Fetch courses error:", error);
-      res.status(500).json({ error: "An error occurred while fetching courses" });
-    }
+    res.json(courses);
   });
 
-  app.post("/api/courses", authenticateToken, authorizeRole("admin"), async (req, res) => {
-    try {
-      const { title, price, duration, level, description, features } = req.body;
-
-      if (!title || !price || !duration || !level || !description || !features) {
-        return res.status(400).json({ error: "All course fields are required" });
-      }
-
-      if (!Array.isArray(features)) {
-        return res.status(400).json({ error: "Features must be an array" });
-      }
-
-      const newCourse = {
-        ...req.body,
-        id: Date.now().toString(),
-        enrolled: [],
-        comments: []
-      };
-      courses.push(newCourse);
-      res.status(201).json(newCourse);
-    } catch (error) {
-      console.error("Create course error:", error);
-      res.status(500).json({ error: "An error occurred while creating the course" });
-    }
+  app.post("/api/courses", authenticateToken, authorizeRole("admin"), (req, res) => {
+    const newCourse = { ...req.body, id: Date.now().toString(), enrolled: [] };
+    courses.push(newCourse);
+    res.status(201).json(newCourse);
   });
 
-  app.put("/api/courses/:id", authenticateToken, authorizeRole("admin"), async (req, res) => {
-    try {
-      const index = courses.findIndex((c) => c.id === req.params.id);
-      if (index === -1) return res.status(404).json({ error: "Course not found" });
-
-      courses[index] = { ...courses[index], ...req.body };
-      res.json(courses[index]);
-    } catch (error) {
-      console.error("Update course error:", error);
-      res.status(500).json({ error: "An error occurred while updating the course" });
-    }
+  app.put("/api/courses/:id", authenticateToken, authorizeRole("admin"), (req, res) => {
+    const index = courses.findIndex((c) => c.id === req.params.id);
+    if (index === -1) return res.status(404).json({ error: "Course not found" });
+    courses[index] = { ...courses[index], ...req.body };
+    res.json(courses[index]);
   });
 
-  app.delete("/api/courses/:id", authenticateToken, authorizeRole("admin"), async (req, res) => {
-    try {
-      const index = courses.findIndex((c) => c.id === req.params.id);
-      if (index === -1) return res.status(404).json({ error: "Course not found" });
-
-      courses.splice(index, 1);
-      res.json({ message: "Course deleted" });
-    } catch (error) {
-      console.error("Delete course error:", error);
-      res.status(500).json({ error: "An error occurred while deleting the course" });
-    }
+  app.delete("/api/courses/:id", authenticateToken, authorizeRole("admin"), (req, res) => {
+    const index = courses.findIndex((c) => c.id === req.params.id);
+    if (index === -1) return res.status(404).json({ error: "Course not found" });
+    courses.splice(index, 1);
+    res.json({ message: "Course deleted" });
   });
 
-  app.post("/api/courses/:id/comments", authenticateToken, async (req: any, res) => {
-    try {
-      const { content } = req.body;
-
-      if (!content || content.trim().length === 0) {
-        return res.status(400).json({ error: "Comment content is required" });
-      }
-
-      const course = courses.find((c) => c.id === req.params.id);
-      if (!course) return res.status(404).json({ error: "Course not found" });
-
-      const comment = {
-        id: Date.now().toString(),
-        userId: req.user.id,
-        userName: req.user.name,
-        content: content.trim(),
-        date: new Date()
-      };
-
-      if (!course.comments) course.comments = [];
-      course.comments.push(comment);
-      res.status(201).json(comment);
-    } catch (error) {
-      console.error("Post comment error:", error);
-      res.status(500).json({ error: "An error occurred while posting the comment" });
-    }
+  app.post("/api/courses/:id/comments", authenticateToken, (req: any, res) => {
+    const { content } = req.body;
+    const course = courses.find((c) => c.id === req.params.id);
+    if (!course) return res.status(404).json({ error: "Course not found" });
+    
+    const comment = {
+      id: Date.now().toString(),
+      userId: req.user.id,
+      userName: req.user.name,
+      content,
+      date: new Date()
+    };
+    
+    if (!course.comments) course.comments = [];
+    course.comments.push(comment);
+    res.status(201).json(comment);
   });
 
   // Enrollment Routes
-  app.post("/api/enroll", authenticateToken, async (req: any, res) => {
-    try {
-      const { courseId } = req.body;
+  app.post("/api/enroll", authenticateToken, (req: any, res) => {
+    const { courseId } = req.body;
+    const course = courses.find((c) => c.id === courseId);
+    if (!course) return res.status(404).json({ error: "Course not found" });
+    
+    const alreadyEnrolled = enrollments.find(e => e.userId === req.user.id && e.courseId === courseId);
+    if (alreadyEnrolled) return res.status(400).json({ error: "Already enrolled" });
 
-      if (!courseId) {
-        return res.status(400).json({ error: "Course ID is required" });
-      }
-
-      const course = courses.find((c) => c.id === courseId);
-      if (!course) return res.status(404).json({ error: "Course not found" });
-
-      const alreadyEnrolled = enrollments.find(e => e.userId === req.user.id && e.courseId === courseId);
-      if (alreadyEnrolled) return res.status(400).json({ error: "Already enrolled" });
-
-      const enrollment = { id: Date.now().toString(), userId: req.user.id, courseId, date: new Date() };
-      enrollments.push(enrollment);
-      res.json(enrollment);
-    } catch (error) {
-      console.error("Enrollment error:", error);
-      res.status(500).json({ error: "An error occurred while enrolling in the course" });
-    }
+    const enrollment = { id: Date.now().toString(), userId: req.user.id, courseId, date: new Date() };
+    enrollments.push(enrollment);
+    res.json(enrollment);
   });
 
-  app.get("/api/my-enrollments", authenticateToken, async (req: any, res) => {
-    try {
-      const myEnrollments = enrollments.filter(e => e.userId === req.user.id);
-      const myCourses = myEnrollments.map(e => {
-        const course = courses.find(c => c.id === e.courseId);
-        const progress = userProgress.find(p => p.userId === req.user.id && p.courseId === e.courseId);
-        return { ...course, completedTopics: progress ? progress.completedTopics : [] };
-      });
-      res.json(myCourses);
-    } catch (error) {
-      console.error("Fetch enrollments error:", error);
-      res.status(500).json({ error: "An error occurred while fetching your enrollments" });
-    }
+  app.get("/api/my-enrollments", authenticateToken, (req: any, res) => {
+    const myEnrollments = enrollments.filter(e => e.userId === req.user.id);
+    const myCourses = myEnrollments.map(e => {
+      const course = courses.find(c => c.id === e.courseId);
+      const progress = userProgress.find(p => p.userId === req.user.id && p.courseId === e.courseId);
+      return { ...course, completedTopics: progress ? progress.completedTopics : [] };
+    });
+    res.json(myCourses);
   });
 
-  app.post("/api/progress", authenticateToken, async (req: any, res) => {
-    try {
-      const { courseId, topic } = req.body;
-
-      if (!courseId || !topic) {
-        return res.status(400).json({ error: "Course ID and topic are required" });
-      }
-
-      let progress = userProgress.find(p => p.userId === req.user.id && p.courseId === courseId);
-
-      if (!progress) {
-        progress = { userId: req.user.id, courseId, completedTopics: [] };
-        userProgress.push(progress);
-      }
-
-      if (!progress.completedTopics.includes(topic)) {
-        progress.completedTopics.push(topic);
-      } else {
-        progress.completedTopics = progress.completedTopics.filter((t: string) => t !== topic);
-      }
-
-      res.json(progress);
-    } catch (error) {
-      console.error("Update progress error:", error);
-      res.status(500).json({ error: "An error occurred while updating progress" });
+  app.post("/api/progress", authenticateToken, (req: any, res) => {
+    const { courseId, topic } = req.body;
+    let progress = userProgress.find(p => p.userId === req.user.id && p.courseId === courseId);
+    
+    if (!progress) {
+      progress = { userId: req.user.id, courseId, completedTopics: [] };
+      userProgress.push(progress);
     }
+    
+    if (!progress.completedTopics.includes(topic)) {
+      progress.completedTopics.push(topic);
+    } else {
+      progress.completedTopics = progress.completedTopics.filter((t: string) => t !== topic);
+    }
+    
+    res.json(progress);
   });
 
   // User Management (Admin only)
-  app.get("/api/admin/users", authenticateToken, authorizeRole("admin"), async (req, res) => {
-    try {
-      res.json(users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role, status: u.status })));
-    } catch (error) {
-      console.error("Fetch users error:", error);
-      res.status(500).json({ error: "An error occurred while fetching users" });
-    }
+  app.get("/api/admin/users", authenticateToken, authorizeRole("admin"), (req, res) => {
+    res.json(users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role, status: u.status })));
   });
 
-  app.put("/api/admin/users/:id", authenticateToken, authorizeRole("admin"), async (req, res) => {
-    try {
-      const { role, status } = req.body;
-      const user = users.find(u => u.id === req.params.id);
-      if (!user) return res.status(404).json({ error: "User not found" });
-
-      if (role && !["admin", "user"].includes(role)) {
-        return res.status(400).json({ error: "Invalid role. Must be 'admin' or 'user'" });
-      }
-
-      if (status && !["active", "inactive"].includes(status)) {
-        return res.status(400).json({ error: "Invalid status. Must be 'active' or 'inactive'" });
-      }
-
-      if (role) {
-        user.role = role;
-      }
-      if (status) {
-        user.status = status;
-      }
-
-      res.json({ message: "User updated", user: { id: user.id, email: user.email, name: user.name, role: user.role, status: user.status } });
-    } catch (error) {
-      console.error("Update user error:", error);
-      res.status(500).json({ error: "An error occurred while updating the user" });
+  app.put("/api/admin/users/:id", authenticateToken, authorizeRole("admin"), (req, res) => {
+    const { role, status } = req.body;
+    const user = users.find(u => u.id === req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    if (role && ["admin", "user"].includes(role)) {
+      user.role = role;
     }
-  });
-
-  // Global error handler middleware
-  app.use((err: any, req: any, res: any, next: any) => {
-    console.error("Unhandled error:", err);
-
-    if (err.name === "JsonWebTokenError") {
-      return res.status(403).json({ error: "Invalid token" });
+    if (status && ["active", "inactive"].includes(status)) {
+      user.status = status;
     }
-
-    if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ error: "Token expired" });
-    }
-
-    if (err.type === "entity.parse.failed") {
-      return res.status(400).json({ error: "Invalid JSON in request body" });
-    }
-
-    res.status(err.status || 500).json({
-      error: err.message || "An unexpected error occurred on the server",
-      ...(process.env.NODE_ENV === "development" && { stack: err.stack })
-    });
-  });
-
-  // 404 handler for undefined API routes
-  app.use("/api/*", (req, res) => {
-    res.status(404).json({ error: "API endpoint not found" });
+    
+    res.json({ message: "User updated", user: { id: user.id, email: user.email, name: user.name, role: user.role, status: user.status } });
   });
 
   // Vite middleware for development
