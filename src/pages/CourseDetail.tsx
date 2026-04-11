@@ -34,7 +34,21 @@ export const CourseDetail: React.FC = () => {
       const res = await fetch("/api/courses");
       const data = await res.json();
       setAllCourses(data);
-      const found = data.find((c: any) => c.id === id);
+      let found = data.find((c: any) => c.id === id);
+      
+      if (found && token) {
+        const enrollRes = await fetch("/api/my-enrollments", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (enrollRes.ok) {
+          const myCourses = await enrollRes.json();
+          const enrolledCourse = myCourses.find((c: any) => c.id === id);
+          if (enrolledCourse) {
+            found = { ...found, ...enrolledCourse, isEnrolled: true };
+          }
+        }
+      }
+      
       setCourse(found);
     } catch (err) {
       console.error("Failed to fetch course", err);
@@ -58,7 +72,7 @@ export const CourseDetail: React.FC = () => {
 
   useEffect(() => {
     fetchCourse();
-  }, [id]);
+  }, [id, token]);
 
   const handleEnroll = async () => {
     if (!user) {
@@ -146,7 +160,7 @@ export const CourseDetail: React.FC = () => {
     return course?.completedTopics?.includes(topic);
   };
 
-  const progressPercentage = course?.features ? Math.round(((course.completedTopics?.length || 0) / course.features.length) * 100) : 0;
+  const progressPercentage = course?.roadmap?.learn ? Math.round(((course.completedTopics?.length || 0) / course.roadmap.learn.length) * 100) : 0;
 
   if (loading) return (
     <div className="min-h-screen bg-white dark:bg-[#020617] flex items-center justify-center transition-colors duration-300">
@@ -201,7 +215,7 @@ export const CourseDetail: React.FC = () => {
             </div>
 
             <div className="space-y-12 md:space-y-16">
-              {user && course.enrolled?.includes(user.id) && (
+              {user && course.isEnrolled && (
                 <section className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-sm hover:shadow-2xl transition-all">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tight">Your Progress</h3>
@@ -226,15 +240,15 @@ export const CourseDetail: React.FC = () => {
                   Course Curriculum
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                  {course.features.map((feature: string, idx: number) => (
+                  {(course.roadmap?.learn || course.features).map((feature: string, idx: number) => (
                     <div 
                       key={idx} 
-                      onClick={() => user && course.enrolled?.includes(user.id) && toggleTopic(feature)}
+                      onClick={() => user && course.isEnrolled && toggleTopic(feature)}
                       className={`bg-white dark:bg-[#0f172a] border p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-between group transition-all duration-500 shadow-sm hover:shadow-xl ${
                         isTopicCompleted(feature) 
                           ? 'border-emerald-500/40 bg-emerald-500/5' 
                           : 'border-slate-200 dark:border-slate-800/50 hover:border-emerald-500/30'
-                      } ${user && course.enrolled?.includes(user.id) ? 'cursor-pointer' : ''}`}
+                      } ${user && course.isEnrolled ? 'cursor-pointer' : ''}`}
                     >
                       <div className="flex items-center gap-4 md:gap-6">
                         <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-base md:text-lg transition-all duration-500 ${
@@ -246,7 +260,7 @@ export const CourseDetail: React.FC = () => {
                           {feature}
                         </span>
                       </div>
-                      {user && course.enrolled?.includes(user.id) && (
+                      {user && course.isEnrolled && (
                         <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg md:rounded-xl border-2 flex items-center justify-center transition-all duration-500 ${
                           isTopicCompleted(feature) ? 'bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-500/20' : 'border-slate-300 dark:border-slate-700'
                         }`}>
@@ -441,11 +455,11 @@ export const CourseDetail: React.FC = () => {
 
               <button
                 onClick={handleEnroll}
-                disabled={enrolling || success}
+                disabled={enrolling || success || course.isEnrolled}
                 className="w-full bg-emerald-600 text-white py-5 md:py-6 rounded-xl md:rounded-[1.5rem] font-black text-lg md:text-xl hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-600/30 flex items-center justify-center gap-3 md:gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {enrolling ? "Enrolling..." : success ? "Enrolled" : "Enroll Now"}
-                {!success && <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />}
+                {enrolling ? "Enrolling..." : (success || course.isEnrolled) ? "Enrolled" : "Enroll Now"}
+                {!(success || course.isEnrolled) && <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />}
               </button>
 
               <p className="text-center text-slate-500 text-[10px] md:text-xs mt-6 md:mt-8 font-bold uppercase tracking-widest">

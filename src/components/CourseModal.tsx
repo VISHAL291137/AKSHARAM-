@@ -70,7 +70,7 @@ export const CourseModal: React.FC<CourseModalProps> = ({
                   </div>
                   
                   <div className="space-y-3">
-                    {topics.map((topic: string) => {
+                    {topics.length > 0 ? topics.map((topic: string) => {
                       const isCompleted = completedTopics.includes(topic);
                       return (
                         <button
@@ -92,13 +92,31 @@ export const CourseModal: React.FC<CourseModalProps> = ({
                           </span>
                         </button>
                       );
-                    })}
+                    }) : (
+                      <p className="text-slate-500 italic">No topics available.</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Right Side: Resources & Path */}
               <div className="space-y-10">
+                {/* Advanced Roadmap Section */}
+                <div>
+                  <h3 className="text-emerald-500 font-black tracking-[0.2em] uppercase text-xs mb-8">Advanced Roadmap</h3>
+                  <div className="space-y-4">
+                    {(course.roadmap?.moreLearn || []).map((item: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-4 p-5 rounded-2xl border border-slate-800/50 bg-slate-900/40 group"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                        <span className="font-bold text-base text-slate-300 group-hover:text-white transition-colors">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="text-emerald-500 font-black tracking-[0.2em] uppercase text-xs mb-8">Recommended Resources</h3>
                   <div className="space-y-4">
