@@ -209,6 +209,11 @@ export const CourseDetail: React.FC = () => {
               <h1 className="text-3xl md:text-7xl font-black text-slate-900 dark:text-white mb-6 md:mb-8 tracking-tight leading-tight">
                 {course.title}
               </h1>
+              {course.activeStudents && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-sm font-bold mb-8">
+                  <Users className="w-4 h-4" /> {course.activeStudents} students already enrolled
+                </div>
+              )}
               <p className="text-slate-600 dark:text-slate-400 text-lg md:text-2xl leading-relaxed max-w-3xl">
                 {course.description}
               </p>
@@ -419,6 +424,14 @@ export const CourseDetail: React.FC = () => {
                   </div>
                   <span className="font-bold text-base md:text-lg">{course.duration}</span>
                 </div>
+                {course.activeStudents && (
+                  <div className="flex items-center gap-4 md:gap-5 text-slate-600 dark:text-slate-300">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
+                      <Users className="w-4 h-4 md:w-5 md:h-5" />
+                    </div>
+                    <span className="font-bold text-base md:text-lg">{course.activeStudents} Enrolled</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-4 md:gap-5 text-slate-600 dark:text-slate-300">
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-500 border border-purple-500/20">
                     <BarChart3 className="w-4 h-4 md:w-5 md:h-5" />

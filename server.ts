@@ -87,6 +87,7 @@ const courses: any[] = [
       { title: "DeepLearning.AI: Neural Networks", link: "#" },
       { title: "Fast.ai: Practical Deep Learning", link: "#" }
     ],
+    activeStudents: "8,200+",
     enrolled: [],
     comments: [],
   },
@@ -113,6 +114,7 @@ const courses: any[] = [
       { title: "CompTIA Security+ Guide", link: "#" },
       { title: "TryHackMe: Cyber Fundamentals", link: "#" }
     ],
+    activeStudents: "5,600+",
     enrolled: [],
     comments: [],
   },
@@ -139,6 +141,7 @@ const courses: any[] = [
       { title: "MDN Web Docs", link: "#" },
       { title: "React Official Documentation", link: "#" }
     ],
+    activeStudents: "15,800+",
     enrolled: [],
     comments: [],
   },
@@ -165,6 +168,7 @@ const courses: any[] = [
       { title: "Microsoft Excel Help Center", link: "#" },
       { title: "ExcelJet: Excel Formulas", link: "#" }
     ],
+    activeStudents: "22,100+",
     enrolled: [],
     comments: [],
   }
