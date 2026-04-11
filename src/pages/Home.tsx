@@ -1,16 +1,72 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { BookOpen, Zap, ShieldCheck, BarChart3, Code, ArrowRight, Star, Users, Award, ChevronRight } from "lucide-react";
+import { BookOpen, Zap, ShieldCheck, BarChart3, Code, ArrowRight, Star, Users, Award, ChevronRight, Layout, Shield, Database } from "lucide-react";
 import { Link } from "react-router-dom";
+import { CourseCard } from "../components/CourseCard";
+import { CourseModal } from "../components/CourseModal";
 
 export const Home: React.FC = () => {
   const [courses, setCourses] = useState<any[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userProgress, setUserProgress] = useState<any[]>([]);
 
   useEffect(() => {
     fetch("/api/courses")
       .then(res => res.json())
       .then(data => setCourses(data));
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch("/api/my-enrollments", {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            setUserProgress(data);
+          }
+        });
+    }
   }, []);
+
+  const getIcon = (id: string) => {
+    switch (id) {
+      case 'fsa': return <Code className="w-8 h-8" />;
+      case 'ds': return <BarChart3 className="w-8 h-8" />;
+      case 'ai-ml': return <Layout className="w-8 h-8" />;
+      case 'cyber': return <Shield className="w-8 h-8" />;
+      case 'excel': return <Database className="w-8 h-8" />;
+      default: return <Zap className="w-8 h-8" />;
+    }
+  };
+
+  const handleToggleTopic = async (courseId: string, topic: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ courseId, topic })
+      });
+      const data = await res.json();
+      setUserProgress(prev => prev.map(p => 
+        p.id === courseId ? { ...p, completedTopics: data.completedTopics } : p
+      ));
+    } catch (err) {
+      console.error("Failed to update progress", err);
+    }
+  };
+
+  const getCompletedTopics = (courseId: string) => {
+    const progress = userProgress.find(p => p.id === courseId);
+    return progress ? progress.completedTopics : [];
+  };
 
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen transition-colors duration-300">
@@ -27,7 +83,7 @@ export const Home: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-600/5 text-blue-700 dark:text-blue-400 text-[10px] md:text-xs font-black mb-8 md:mb-10 uppercase tracking-[0.2em] border border-blue-600/10"
+              className="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-600/5 text-emerald-700 dark:text-emerald-400 text-[10px] md:text-xs font-black mb-8 md:mb-10 uppercase tracking-[0.2em] border border-emerald-600/10"
             >
               Empower Your Future
             </motion.div>
@@ -39,7 +95,7 @@ export const Home: React.FC = () => {
               className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white mb-8 md:mb-10 tracking-tight leading-[1.05] px-2"
             >
               Master the Most <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 dark:from-emerald-400 dark:to-teal-500">
                 In-Demand Tech Skills
               </span>
             </motion.h1>
@@ -62,13 +118,13 @@ export const Home: React.FC = () => {
             >
               <Link
                 to="/courses"
-                className="w-full sm:w-auto bg-blue-600 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl hover:bg-blue-700 transition-all shadow-[0_20px_50px_rgba(37,99,235,0.25)] flex items-center justify-center gap-3 group"
+                className="w-full sm:w-auto bg-emerald-600 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl hover:bg-emerald-700 transition-all shadow-[0_20px_50px_rgba(16,185,129,0.25)] flex items-center justify-center gap-3 group relative z-10"
               >
                 Explore Courses <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/register"
-                className="w-full sm:w-auto bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm"
+                className="w-full sm:w-auto bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 px-8 md:px-10 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm relative z-10"
               >
                 Free Trial
               </Link>
@@ -85,51 +141,45 @@ export const Home: React.FC = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Professional Programs</h2>
               <p className="text-slate-600 dark:text-slate-400 max-w-xl">Industry-aligned curriculums designed to take you from beginner to job-ready professional.</p>
             </div>
-            <Link to="/courses" className="flex items-center gap-2 text-blue-600 dark:text-blue-500 font-bold hover:gap-3 transition-all text-sm md:text-base">
+            <Link to="/courses" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500 font-bold hover:gap-3 transition-all text-sm md:text-base relative z-10">
               View All Courses <ChevronRight className="w-5 h-5" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {courses.slice(0, 3).map((course, i) => (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 hover:border-blue-500/50 hover:bg-white dark:hover:bg-slate-800/50 transition-all duration-300 flex flex-col shadow-sm hover:shadow-xl"
-              >
-                <div className="mb-6 md:mb-8 w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center text-2xl md:text-3xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                  {course.id === 'ds' ? '📊' : course.id === 'ai-ml' ? '🤖' : '💻'}
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{course.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-6 md:mb-8 flex-grow leading-relaxed text-sm md:text-base">{course.description}</p>
-                
-                <div className="pt-6 md:pt-8 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Starting at</span>
-                    <span className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">{course.price}</span>
-                  </div>
-                  <Link
-                    to={`/courses/${course.id}`}
-                    className="bg-blue-600 text-white p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
-                  >
-                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-                  </Link>
-                </div>
-              </motion.div>
+              <CourseCard 
+                key={course.id} 
+                course={{
+                  ...course,
+                  icon: getIcon(course.id)
+                }} 
+                onOpenModal={() => {
+                  setSelectedCourse(course);
+                  setIsModalOpen(true);
+                }}
+              />
             ))}
           </div>
         </div>
       </section>
+
+      {selectedCourse && (
+        <CourseModal
+          course={selectedCourse}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          completedTopics={getCompletedTopics(selectedCourse.id)}
+          onToggleTopic={(topic) => handleToggleTopic(selectedCourse.id, topic)}
+        />
+      )}
 
       {/* Trust Stats */}
       <section className="py-16 md:py-24 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {[
-              { label: "Active Students", value: "50K+", icon: <Users className="text-blue-600 dark:text-blue-500 w-5 h-5 md:w-6 md:h-6" /> },
+              { label: "Active Students", value: "50K+", icon: <Users className="text-emerald-600 dark:text-emerald-500 w-5 h-5 md:w-6 md:h-6" /> },
               { label: "Expert Mentors", value: "200+", icon: <Star className="text-yellow-500 w-5 h-5 md:w-6 md:h-6" /> },
               { label: "Hiring Partners", value: "500+", icon: <Award className="text-emerald-600 dark:text-emerald-500 w-5 h-5 md:w-6 md:h-6" /> },
               { label: "Success Rate", value: "94%", icon: <Zap className="text-purple-600 dark:text-purple-500 w-5 h-5 md:w-6 md:h-6" /> },

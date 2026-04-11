@@ -12,9 +12,11 @@ import {
   ArrowRight,
   Menu,
   X,
-  Bell
+  Bell,
+  Download
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { generateCertificate } from "../lib/certificate";
 
 export const Dashboard: React.FC = () => {
   const { user, token, logout } = useAuth();
@@ -226,13 +228,26 @@ export const Dashboard: React.FC = () => {
                         />
                       </div>
 
-                      <Link 
-                        to={`/courses/${course.id}`} 
-                        className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-500 font-bold text-sm hover:gap-3 transition-all group/link"
-                      >
-                        View Details 
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                      </Link>
+                      <div className="flex items-center justify-between gap-4">
+                        <Link 
+                          to={`/courses/${course.id}`} 
+                          className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-500 font-bold text-sm hover:gap-3 transition-all group/link"
+                        >
+                          View Details 
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                        </Link>
+
+                        {progress === 100 && (
+                          <button
+                            onClick={() => user && generateCertificate(user.name, course.title)}
+                            className="flex items-center gap-2 bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-emerald-500/20 group/cert"
+                            title="Download Certificate"
+                          >
+                            <Download className="w-3.5 h-3.5 group-hover/cert:-translate-y-0.5 transition-transform" />
+                            Certificate
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );

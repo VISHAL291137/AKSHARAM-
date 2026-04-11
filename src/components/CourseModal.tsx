@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Check, Star, ArrowRight, Award, ShieldCheck } from "lucide-react";
+import { X, Check, Star, ArrowRight, Award, ShieldCheck, Download } from "lucide-react";
+import { generateCertificate } from "../lib/certificate";
+import { useAuth } from "../context/AuthContext";
 
 interface CourseModalProps {
   course: any;
@@ -17,8 +19,16 @@ export const CourseModal: React.FC<CourseModalProps> = ({
   completedTopics,
   onToggleTopic,
 }) => {
+  const { user } = useAuth();
   const topics = course.roadmap?.learn || [];
   const progress = topics.length > 0 ? Math.round((completedTopics.length / topics.length) * 100) : 0;
+  const isCompleted = progress === 100 && topics.length > 0;
+
+  const handleDownloadCertificate = () => {
+    if (user) {
+      generateCertificate(user.name, course.title);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -140,14 +150,31 @@ export const CourseModal: React.FC<CourseModalProps> = ({
                   </div>
                 </div>
 
-                <div className="p-8 rounded-[2rem] bg-emerald-500/5 border border-emerald-500/10">
+                <div className={`p-8 rounded-[2rem] border transition-all ${
+                  isCompleted 
+                    ? "bg-emerald-500/10 border-emerald-500/30 shadow-lg shadow-emerald-500/10" 
+                    : "bg-emerald-500/5 border-emerald-500/10"
+                }`}>
                   <div className="flex items-center gap-4 mb-4 text-emerald-500">
                     <Award className="w-6 h-6" />
-                    <h4 className="font-black text-xl tracking-tight text-white">Certification Path</h4>
+                    <h4 className="font-black text-xl tracking-tight text-white">
+                      {isCompleted ? "Course Completed!" : "Certification Path"}
+                    </h4>
                   </div>
-                  <p className="text-slate-400 leading-relaxed text-sm font-medium">
-                    Complete all topics in this section to unlock the intermediate assessment and earn your digital badge.
+                  <p className="text-slate-400 leading-relaxed text-sm font-medium mb-6">
+                    {isCompleted 
+                      ? "Congratulations! You've mastered all topics in this course. You can now download your official certificate of completion."
+                      : "Complete all topics in this section to unlock the intermediate assessment and earn your digital badge."}
                   </p>
+                  {isCompleted && (
+                    <button
+                      onClick={handleDownloadCertificate}
+                      className="w-full flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-emerald-600/20 group"
+                    >
+                      <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+                      Download Certificate
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

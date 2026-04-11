@@ -14,8 +14,10 @@ import {
   AlertCircle, 
   MessageSquare, 
   Send,
-  Users
+  Users,
+  Download
 } from "lucide-react";
+import { generateCertificate } from "../lib/certificate";
 
 export const CourseDetail: React.FC = () => {
   const { id } = useParams();
@@ -210,7 +212,7 @@ export const CourseDetail: React.FC = () => {
                 {course.title}
               </h1>
               {course.activeStudents && (
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-sm font-bold mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-bold mb-8">
                   <Users className="w-4 h-4" /> {course.activeStudents} students already enrolled
                 </div>
               )}
@@ -221,12 +223,23 @@ export const CourseDetail: React.FC = () => {
 
             <div className="space-y-12 md:space-y-16">
               {user && course.isEnrolled && (
-                <section className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-sm hover:shadow-2xl transition-all">
+                <section className={`bg-white dark:bg-[#0f172a] border rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-sm transition-all ${
+                  progressPercentage === 100 
+                    ? "border-emerald-500/40 bg-emerald-500/5 shadow-xl shadow-emerald-500/10" 
+                    : "border-slate-200 dark:border-slate-800/50 hover:shadow-2xl"
+                }`}>
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tight">Your Progress</h3>
+                    <div>
+                      <h3 className="text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                        {progressPercentage === 100 ? "Congratulations! Course Completed" : "Your Progress"}
+                      </h3>
+                      {progressPercentage === 100 && (
+                        <p className="text-slate-500 text-sm font-medium mt-1">You've mastered all topics in this course.</p>
+                      )}
+                    </div>
                     <span className="text-emerald-600 dark:text-emerald-500 font-black text-lg md:text-xl">{progressPercentage}%</span>
                   </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-800/50 rounded-full h-3 md:h-4 overflow-hidden">
+                  <div className="w-full bg-slate-200 dark:bg-slate-800/50 rounded-full h-3 md:h-4 overflow-hidden mb-8">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${progressPercentage}%` }}
@@ -234,6 +247,16 @@ export const CourseDetail: React.FC = () => {
                       className="h-full bg-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.6)]"
                     />
                   </div>
+
+                  {progressPercentage === 100 && (
+                    <button
+                      onClick={() => user && generateCertificate(user.name, course.title)}
+                      className="inline-flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-emerald-600/20 group"
+                    >
+                      <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+                      Download Certificate
+                    </button>
+                  )}
                 </section>
               )}
 
@@ -281,7 +304,7 @@ export const CourseDetail: React.FC = () => {
                 <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
                   <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/50 rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 shadow-sm hover:shadow-2xl transition-all">
                     <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-6 md:mb-8 flex items-center gap-4 tracking-tight">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-500 border border-blue-500/20">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
                         <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
                       </div>
                       What you'll learn
@@ -289,7 +312,7 @@ export const CourseDetail: React.FC = () => {
                     <ul className="space-y-4 md:space-y-5">
                       {course.roadmap.learn.map((item: string, i: number) => (
                         <li key={i} className="flex items-center gap-3 md:gap-4 text-slate-600 dark:text-slate-400 text-base md:text-lg">
-                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                           {item}
                         </li>
                       ))}
@@ -350,7 +373,7 @@ export const CourseDetail: React.FC = () => {
               {/* Comments Section */}
               <section className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 shadow-sm hover:shadow-2xl transition-all">
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-8 md:mb-10 flex items-center gap-4 tracking-tight">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-500 border border-blue-500/20">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
                     <MessageSquare className="w-5 h-5 md:w-6 md:h-6" />
                   </div>
                   Student Discussions
@@ -419,7 +442,7 @@ export const CourseDetail: React.FC = () => {
 
               <div className="space-y-6 md:space-y-8 mb-10 md:mb-12">
                 <div className="flex items-center gap-4 md:gap-5 text-slate-600 dark:text-slate-300">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-500 border border-blue-500/20">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
                     <Clock className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
                   <span className="font-bold text-base md:text-lg">{course.duration}</span>
